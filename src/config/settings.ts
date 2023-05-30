@@ -24,7 +24,7 @@ export const siteTitle: TSiteTitle = "Admin-Element-Vue";
 /**
  * @description: 首页路由path
  */
-export const homePath: THomePath = "/home";
+export const homePath: THomePath = "/sys";
 
 /**
  * @description: 站点本地存储Token 的 Key值

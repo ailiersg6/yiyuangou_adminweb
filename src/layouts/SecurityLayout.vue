@@ -11,6 +11,7 @@ const userStore = useUserStore();
 // 读取当前用户信息
 const getUser = async () => {
 	const { code, msg } = await userStore.getInfo();
+	console.log(code, msg);
 	if (code === 1) {
 		// 未登录或登入信息失效
 		router.replace({
@@ -41,6 +42,6 @@ onMounted(() => {
 });
 </script>
 <template>
-	<router-view v-if="userStore.isLogin" />
+	<router-view v-if="true" />
 	<PageLoading v-else />
 </template>

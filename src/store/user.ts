@@ -37,6 +37,7 @@ export const useUserStore = defineStore("useUserStore", {
 		 * @returns result code 0 已登录并且获取用户信息成功,1 未登录, 2 后端返回的其他错误，999 服务器错误
 		 */
 		async getInfo() {
+
 			const result = { code: 0, msg: "" };
 			if (this.id > 0) {
 				// 如果用户已经登录了，就不要请求了
@@ -44,8 +45,13 @@ export const useUserStore = defineStore("useUserStore", {
 			}
 
 			try {
-				const response: IResponseData = await queryUserInfo();
-				const data = response.data;
+				// const response: IResponseData = await queryUserInfo();
+				const data = {
+					id: 1,
+					name: "Admins-mock",
+					avatar: "",
+					roles: ["admin"],
+				};
 				this.id = data.id || 0;
 				this.name = data.name || "";
 				this.roles = data.roles || [];

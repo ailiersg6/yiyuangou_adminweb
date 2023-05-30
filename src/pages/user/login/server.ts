@@ -3,7 +3,7 @@ import { LoginParamsType } from "./data";
 
 export async function accountLogin(params: LoginParamsType): Promise<any> {
 	return request({
-		url: "/user/login",
+		url: "/login",
 		method: "POST",
 		data: params,
 	});

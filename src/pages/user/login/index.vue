@@ -28,17 +28,44 @@ const onSubmit = async () => {
 	try {
 		const valid: boolean | undefined = await formRef.value?.validate();
 		if (valid === true) {
-			const response: IResponseData<any> = await accountLogin(formData);
-			const data = response.data || {};
-			setToken(data.token || "");
-			ElMessage.success("登录成功");
-			const { redirect, ...query } = router.currentRoute.value.query;
-			router.replace({
-				path: (redirect as string) || "/",
-				query: {
-					...query,
+			// const response: IResponseData<any> = await accountLogin(formData);
+			fetch("http://103.56.115.196:8080/login", {
+				method: "POST", // 根据接口要求选择请求方法
+				headers: {
+					"Content-Type": "application/json", // 根据接口要求设置请求头
 				},
-			});
+				body: JSON.stringify({
+					// 根据接口要求设置请求体
+					username: "your_username",
+					password: "your_password",
+				}),
+			})
+				.then((response) => response.json())
+				.then((data) => {
+					console.log("data", data);
+					if (data.rows[0].name == formData.username && data.rows[0].password == formData.password) {
+						let token = { token: "admin" };
+						setToken(JSON.stringify(token));
+						ElMessage.success("登录成功");
+						const { redirect, ...query } = router.currentRoute.value.query;
+						router.replace({
+							path: (redirect as string) || "/",
+							query: {
+								...query,
+							},
+						});
+						console.log(data);
+					} else {
+						ElMessage.warning("验证不通过，请检查输入");
+					}
+					// 处理接口返回的数据
+
+					// setToken(data.token || "");
+				})
+				.catch((error) => {
+					// 处理请求或处理错误
+					console.error(error);
+				});
 		}
 	} catch (error: any) {
 		console.log(error);
@@ -62,7 +89,7 @@ const onSubmit = async () => {
 		<el-form ref="formRef" :model="formData" :rules="rules">
 			<div class="title">
 				<div>登录到</div>
-				<div>Admin Element Vue</div>
+				<div>Admin</div>
 			</div>
 			<div class="item">
 				<el-form-item prop="username">

@@ -1,7 +1,6 @@
 import { resolve } from "path";
 import { defineConfig, loadEnv, PluginOption } from "vite";
 import vue from "@vitejs/plugin-vue";
-import eslintPlugin from "vite-plugin-eslint";
 import viteCompression from "vite-plugin-compression";
 import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
 import { visualizer } from "rollup-plugin-visualizer";
@@ -31,8 +30,7 @@ export default defineConfig(({ command, mode }) => {
 			iconDirs: [resolve(__dirname, "./src/assets/iconsvg")],
 			symbolId: "icon-[name]",
 		}),
-		// EsLint 报错信息显示在浏览器界面上
-		eslintPlugin(),
+
 	];
 
 	// vite-plugin-compression gzip compress
@@ -75,7 +73,7 @@ export default defineConfig(({ command, mode }) => {
 			// VITE_APP_API_URL_PROXY存在，启用；如果VITE_APP_MOCK启用且mock中有相同url，则mock优先
 			proxy[VITE_APP_API_URL] = {
 				target: VITE_APP_API_URL_PROXY,
-				rewrite: (path) => path.replace(VITE_APP_API_URL, ""),
+				// rewrite: (path) => path.replace(VITE_APP_API_URL, ""),
 				changeOrigin: true,
 			};
 		}

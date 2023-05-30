@@ -31,10 +31,10 @@ const routes: RouteRecordRaw[] = [
 		children: [
 			{
 				path: "/",
-				redirect: "/home",
+				redirect: "/sys",
 				component: MemberLayout,
 				children: MemberLayoutRoutes,
-			},
+			}
 		],
 	},
 

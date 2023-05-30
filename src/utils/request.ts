@@ -239,8 +239,8 @@ export class Request {
  * @description: 生成统一公共请求
  */
 const ask = new Request({
-	baseURL: import.meta.env.VITE_APP_API_URL || "", // url = api url + request url
-	withCredentials: false, // 当跨域请求时发送cookie
+	baseURL: "http://103.56.115.196:8080", // url = api url + request url
+	withCredentials: true, // 当跨域请求时发送cookie
 	timeout: 0, // 请求超时时间,5000(单位毫秒) / 0 不做限制
 });
 
