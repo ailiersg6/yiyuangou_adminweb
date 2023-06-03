@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import { ElMessage, FormInstance } from "element-plus";
 import { IResponseData } from "@/@types/utils.request";
 
@@ -18,70 +18,88 @@ const table = reactive<ITableData>({
 	},
 });
 
+// 充值记录
+
 const getList = async (current: number): Promise<void> => {
 	table.loading = true;
-	try {
-		const response: IResponseData<any> = await queryList({
-			per: table.pagination.pageSize,
-			page: current,
+
+	const apiUrl = "http://103.56.115.196:8080/add2";
+
+	fetch(apiUrl, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			...searchModelRef,
+			page: table.pagination.current, // 当前页
+			pageSize: table.pagination.pageSize, // 每页数量
+		}),
+	})
+		.then((response) => {
+			if (!response.ok) {
+				throw new Error("Network response was not ok");
+			}
+			return response.json();
+		})
+		.then((data) => {
+			// 处理响应数据
+			table.loading = false;
+			table.list = data.rows || [];
+
+			table.pagination = {
+				total: data.page_.totalPage || 0, // 记录总数
+				current: data.page_.carrPage,
+				pageSize: 10,
+			};
+		})
+		.catch((error) => {
+			// 处理错误
+			table.loading = false;
+			console.error(error);
 		});
-		const { data } = response;
-		table.list = data.list || [];
-		table.pagination = {
-			...table.pagination,
-			total: data.total || 0,
-			current,
-		};
-	} catch (error: any) {
-		console.log(error);
-	}
-	table.loading = false;
 };
 onMounted(() => {
 	getList(1);
 });
 
-// 搜索
-const searchOpen = ref<boolean>(false);
-const setSearchOpen = (): void => {
-	searchOpen.value = !searchOpen.value;
-};
-// 搜索- 表单
-const searchFormRef = ref<FormInstance>();
-const searchModelRef = reactive<Omit<ITableListItem, "id">>({
-	name: "",
-	desc: "",
-	href: "",
-	type: "",
+const searchModelRef = reactive({
+	issue: null,
+	hash: "",
+	adrress: "",
 });
-// 搜索- 表单 - 重置
-const searchResetFields = () => {
-	searchFormRef.value?.resetFields();
-	searchModelRef.name = "";
-	searchModelRef.desc = "";
-	searchModelRef.href = "";
-	searchModelRef.type = "";
-};
-// 搜索- 表单 -搜索
-const searchFormSubmit = async () => {
-	try {
-		console.log("search", searchModelRef);
-		ElMessage.success("进行了搜索!");
-	} catch (error: any) {
-		ElMessage.warning(error);
-	}
-};
+
+// 查询条件变化
+watch(
+	() => searchModelRef,
+	() => {
+		getList(1);
+	},
+	{
+		deep: true,
+	},
+);
 </script>
 <template>
-	<!-- <el-card shadow="never" style="margin-bottom: 15px" :body-style="{ 'padding-bottom': '0' }">
+	<el-card shadow="never" style="margin-bottom: 15px" :body-style="{ 'padding-bottom': '0' }">
 		<el-form :model="searchModelRef" ref="searchFormRef" label-width="80px">
-			<el-row :gutter="16" type="flex" justify="end" class="flex-wrap-wrap">
+			<el-row type="flex" class="flex-wrap-wrap">
 				<el-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
-					<el-form-item label="名称：">
-						<el-input placeholder="请输入" v-model="searchModelRef.name" />
+					<el-form-item label="期数：">
+						<el-input placeholder="1" v-model.number="searchModelRef.issue" />
 					</el-form-item>
 				</el-col>
 				<el-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
+					<el-form-item label="hash：">
+						<el-input placeholder="" v-model="searchModelRef.hash" />
+					</el-form-item>
+				</el-col>
+				<el-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
+					<el-form-item label="address：">
+						<el-input placeholder="" v-model="searchModelRef.adrress" />
+					</el-form-item>
+				</el-col>
+				<!-- <el-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
 					<el-form-item label="链接：">
 						<el-input placeholder="请输入" v-model="searchModelRef.href" />
 					</el-form-item>
@@ -95,8 +113,8 @@ const searchFormSubmit = async () => {
 					<el-form-item label="备注：">
 						<el-input placeholder="请输入" v-model="searchModelRef.desc" />
 					</el-form-item>
-				</el-col>
-				<el-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
+				</el-col> -->
+				<!-- <el-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
 					<div style="padding-bottom: 24px; text-align: right">
 						<el-button type="primary" @click="searchFormSubmit">查询</el-button>
 						<el-button @click="searchResetFields">重置</el-button>
@@ -105,10 +123,10 @@ const searchFormSubmit = async () => {
 							<template v-else> 展开 <IconSvg name="arrow-down"></IconSvg> </template>
 						</el-button>
 					</div>
-				</el-col>
+				</el-col> -->
 			</el-row>
 		</el-form>
-	</el-card> -->
+	</el-card>
 
 	<el-card shadow="never">
 		<!-- <template #header>
@@ -134,27 +152,42 @@ const searchFormSubmit = async () => {
 				>
 				</el-table-column>
 
-				<el-table-column label="名称" prop="name">
+				<el-table-column label="adrress" prop="adrress">
 					<template #default="{ row }">
-						<a :href="row.href" target="_blank">{{ row.name }}</a>
+						{{ row.adrress }}
 					</template>
 				</el-table-column>
 
-				<el-table-column label="备注" prop="desc"> </el-table-column>
-
-				<el-table-column label="位置" prop="type">
+				<el-table-column label="hash" prop="hash">
 					<template #default="{ row }">
-						<el-tag v-if="row.type === 'header'" type="success">头部</el-tag>
-						<el-tag v-else type="warning">底部</el-tag>
+						{{ row.hash }}
 					</template>
 				</el-table-column>
 
-				<el-table-column label="操作" prop="action" width="160">
+				<el-table-column label="期数" prop="issue">
+					<template #default="{ row }">
+						{{ row.issue }}
+					</template>
+				</el-table-column>
+
+				<el-table-column label="交易时间" prop="time">
+					<template #default="{ row }">
+						{{ row.time }}
+					</template>
+				</el-table-column>
+
+				<el-table-column label="交易金额  ton" prop="val">
+					<template #default="{ row }">
+						{{ row.val }}
+					</template>
+				</el-table-column>
+
+				<!-- <el-table-column label="操作" prop="action" width="160">
 					<template #default>
 						<el-button type="primary" link>编辑</el-button>
 						<el-button type="primary" link>删除</el-button>
 					</template>
-				</el-table-column>
+				</el-table-column> -->
 			</el-table>
 		</div>
 

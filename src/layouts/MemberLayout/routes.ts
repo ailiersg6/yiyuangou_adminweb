@@ -5,7 +5,7 @@ const MemberLayoutRoutes: RouteRecordRaw[] = [
 	{
 		meta: {
 			title: "系统设置",
-			icon: "menu-home",
+			// icon: "menu-home",
 		},
 		path: "/sys",
 		component: () => import("@/pages/index/index.vue"),
@@ -13,47 +13,56 @@ const MemberLayoutRoutes: RouteRecordRaw[] = [
 	{
 		meta: {
 			title: "充值记录",
-			icon: "menu-home",
+			// icon: "menu-home",
 		},
 		path: "/rechargeRecords",
 		component: () => import("@/pages/rechargeRecords/filter/index.vue"),
 	},
 	{
+		name: "filter2",
 		meta: {
-			title: "历史期数",
-			icon: "menu-home",
+			title: "中奖记录",
+			// icon: "menu-home",
 		},
-		path: "/RecordsPast",
-		children: [
-			{
-				name: "filter1",
-				meta: {
-					title: "参与信息",
-					isKeepAlive: true,
-				},
-				path: "filter1",
-				component: () => import("@/pages/RecordsPast/filter1/index.vue"),
-			},
-			{
-				name: "filter2",
-				meta: {
-					title: "中奖记录",
-					isKeepAlive: true,
-				},
-				path: "filter2",
-				component: () => import("@/pages/RecordsPast/filter2/index.vue"),
-			},
-			{
-				name: "filter3",
-				meta: {
-					title: "哈希排序",
-					isKeepAlive: true,
-				},
-				path: "filter3",
-				component: () => import("@/pages/RecordsPast/filter3/index.vue"),
-			},
-		],
+		path: "/filter2",
+		component: () => import("@/pages/RecordsPast/filter2/index.vue"),
 	},
+	// {
+	// 	meta: {
+	// 		title: "历史期数",
+	// 		icon: "menu-home",
+	// 	},
+	// 	path: "/RecordsPast",
+	// 	children: [
+	// 		{
+	// 			name: "filter1",
+	// 			meta: {
+	// 				title: "参与信息",
+	// 				isKeepAlive: true,
+	// 			},
+	// 			path: "filter1",
+	// 			component: () => import("@/pages/RecordsPast/filter1/index.vue"),
+	// 		},
+	// 		{
+	// 			name: "filter2",
+	// 			meta: {
+	// 				title: "中奖记录",
+	// 				isKeepAlive: true,
+	// 			},
+	// 			path: "filter2",
+	// 			component: () => import("@/pages/RecordsPast/filter2/index.vue"),
+	// 		},
+	// 		{
+	// 			name: "filter3",
+	// 			meta: {
+	// 				title: "哈希排序",
+	// 				isKeepAlive: true,
+	// 			},
+	// 			path: "filter3",
+	// 			component: () => import("@/pages/RecordsPast/filter3/index.vue"),
+	// 		},
+	// 	],
+	// },
 
 
 

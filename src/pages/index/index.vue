@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from "vue";
-import { ElLoading, ElMessage, FormInstance, FormRules } from "element-plus";
+import { ElLoading, ElMessage, ElMessageBox, FormInstance, FormRules } from "element-plus";
 import { IFormData } from "./data";
 interface IFormData {
 	product: string; // 产品名称
@@ -65,7 +65,6 @@ function getdata() {
 			delete data.rows[0].id;
 			Object.assign(ruleForm, { ...data.rows[0] });
 
-			console.log("123", data);
 			loading.close();
 		})
 		.catch((error) => {
@@ -104,6 +103,7 @@ const rules = reactive<FormRules>({
 	checkbox: [],
 	remark: [],
 });
+// 修改产品
 function submData() {
 	const apiUrl = "http://103.56.115.196:8080/product";
 
@@ -129,7 +129,41 @@ function submData() {
 			// 处理错误
 			console.error(error);
 		});
+
+	if (ruleForm.open == 1) {
+	}
 }
+// 设置open  =1
+
+function editOpen() {
+	return new Promise((resolve) => {
+		const apiUrl = "http://103.56.115.196:8080/product";
+
+		fetch(apiUrl, {
+			method: "PATCH",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ open: 1 }),
+		})
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error("Network response was not ok");
+				}
+				return response.json();
+			})
+			.then((data) => {
+				// 处理响应数据
+				resolve(true);
+			})
+			.catch((error) => {
+				// 处理错误
+				console.error(error);
+				resolve(false);
+			});
+	});
+}
+
 const submitForm = async () => {
 	try {
 		const valid: boolean | undefined = await ruleFormRef.value?.validate();
@@ -144,10 +178,114 @@ const submitForm = async () => {
 const resetForm = async () => {
 	ruleFormRef.value?.resetFields();
 };
+// 开始抢单
+const onStart = async () => {
+	const loading = ElLoading.service({
+		lock: true,
+		text: "Loading",
+		background: "rgba(0, 0, 0, 0.7)",
+	});
+
+	await editOpen(); //  设置open = 1
+
+	const apiUrl = "http://103.56.115.196:8080/rewarded";
+
+	fetch(apiUrl, {
+		method: "Post",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({ open: 1 }),
+	})
+		.then((response) => {
+			if (!response.ok) {
+				throw new Error("Network response was not ok");
+			}
+			return response.json();
+		})
+		.then((data) => {
+			// 处理响应数据
+			// getdata();
+			// loading.close();
+			// ElMessage.success("抢单开始");
+		})
+		.catch((error) => {
+			// 处理错误
+			// console.error(error);
+			// loading.close();
+		});
+
+	setTimeout(() => {
+		getdata();
+		loading.close();
+		ElMessage.success("抢单开始");
+	}, 2000);
+};
+// 停止活动
+const onStop = async () => {
+	const apiUrl = "http://103.56.115.196:8080/product3";
+	// 停止活动
+	fetch(apiUrl, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({}),
+	})
+		.then((response) => {
+			if (!response.ok) {
+				throw new Error("Network response was not ok");
+			}
+			return response.json();
+		})
+		.then((data) => {
+			// 处理响应数据
+			ElMessage.success("活动结束");
+			getdata();
+		})
+		.catch((error) => {
+			// 处理错误
+			console.error(error);
+		});
+};
+// 提现
+const onWithdr = () => {
+	ElMessageBox.confirm("注意！ 将提现到部署此合约的钱包中。", "Warning", {
+		confirmButtonText: "提现",
+		cancelButtonText: "取消",
+		type: "warning",
+	})
+		.then(() => {
+			const apiUrl = "http://103.56.115.196:8080/withdraw1";
+			// 停止活动
+			fetch(apiUrl, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({}),
+			})
+				.then((response) => {
+					if (!response.ok) {
+						throw new Error("Network response was not ok");
+					}
+					return response.json();
+				})
+				.then((data) => {
+					// 处理响应数据
+					ElMessage.success("提现成功！ 有几秒延迟");
+				})
+				.catch((error) => {
+					// 处理错误
+					console.error(error);
+				});
+		})
+		.catch(() => {});
+};
 </script>
 
 <template>
-	<el-card shadow="never">
+	<el-card shadow="never" :inline="true">
 		<el-form
 			ref="ruleFormRef"
 			:model="ruleForm"
@@ -163,7 +301,7 @@ const resetForm = async () => {
 			<el-form-item label="产品价值" prop="productValue">
 				<el-input v-model.number="ruleForm.productValue" placeholder="产品价值" />
 			</el-form-item>
-			<el-form-item label="最低有效金额( ton货币有8位小数 1个币 = 100000000 )" prop="productLimit">
+			<el-form-item label="最低有效金额( ton货币有9位小数 1个币 = 1000000000 )" prop="productLimit">
 				<el-input v-model.number="ruleForm.productLimit" placeholder="最低有效金额" />
 			</el-form-item>
 			<el-form-item label="中奖人数" prop="productP">
@@ -175,63 +313,24 @@ const resetForm = async () => {
 			<el-form-item label="开奖时间间隔 （分钟）" prop="wintime">
 				<el-input v-model.number="ruleForm.wintime" placeholder="开奖时间间隔" />
 			</el-form-item>
-			<el-form-item label="当前期数" prop="issue">
-				<el-input v-model.number="ruleForm.issue" placeholder="当前期数" />
+			<el-form-item label="期数" prop="issue">
+				<el-input v-model.number="ruleForm.issue" placeholder="期数" />
 			</el-form-item>
-			<!-- <el-form-item label="起止日期" prop="date">
-				<el-date-picker
-					type="daterange"
-					v-model="ruleForm.date"
-					range-separator="至"
-					start-placeholder="开始日期"
-					end-placeholder="结束日期"
-					class="form-basic-width100"
-				>
-				</el-date-picker>
-			</el-form-item> -->
-			<!-- <el-form-item label="下拉选择" prop="select">
-				<el-select v-model="ruleForm.select" placeholder="请选择" clearable style="width: 100%">
-					<el-option label="select1" value="1"></el-option>
-					<el-option label="select2" value="2"></el-option>
-					<el-option label="select3" value="3"></el-option>
-				</el-select>
-			</el-form-item> -->
 
-			<el-form-item label="抢单开关" prop="open">
-				<el-radio-group v-model="ruleForm.open">
-					<el-radio :label="1">开</el-radio>
-					<el-radio :label="2">关</el-radio>
-				</el-radio-group>
+			<el-form-item label="开启状态" prop="open">
+				<span v-if="ruleForm.open == 1" style="color: #15e307">已经开启</span>
+				<span v-else style="color: red">已关闭</span>
 			</el-form-item>
-			<!--
-			<el-form-item label="单选按钮2" prop="radio2">
-				<el-radio-group v-model="ruleForm.radio2">
-					<el-radio-button label="1">item 1</el-radio-button>
-					<el-radio-button label="2">item 2</el-radio-button>
-					<el-radio-button label="3">item 3</el-radio-button>
-				</el-radio-group>
-			</el-form-item> -->
-
-			<!-- <el-form-item label="抢单开关" prop="checkbox">
-				<el-checkbox-group v-model="ruleForm.checkbox">
-					<el-checkbox label="1">开</el-checkbox>
-					<el-checkbox label="2">关</el-checkbox>
-
-				</el-checkbox-group>
-			</el-form-item> -->
-
-			<!-- <el-form-item label="备注" prop="remark">
-				<el-input
-					type="textarea"
-					:autosize="{ minRows: 2, maxRows: 4 }"
-					placeholder="请输入内容"
-					v-model="ruleForm.remark"
-				>
-				</el-input>
-			</el-form-item> -->
 			<el-form-item>
-				<el-button type="primary" @click="submitForm()"> 保存 </el-button>
-				<el-button @click="resetForm()">重置</el-button>
+				<el-button type="primary" @click="submitForm()"> 保存设置 </el-button>
+				<!-- <el-button @click="resetForm()">重置</el-button> -->
+				<el-button type="success" @click="onStart()" :disabled="ruleForm.open == 1">开启活动</el-button>
+				<el-button type="danger" @click="onStop()" :disabled="ruleForm.open == 0">停止活动</el-button>
+			</el-form-item>
+
+			<el-divider />
+			<el-form-item>
+				<el-button type="success" @click="onWithdr()">提现</el-button>
 			</el-form-item>
 		</el-form>
 	</el-card>
