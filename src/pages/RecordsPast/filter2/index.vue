@@ -7,6 +7,7 @@ import IconSvg from "@/components/IconSvg/index.vue";
 import TypeSelect from "./components/TypeSelect/index.vue";
 import { ITableData, ITableListItem } from "./data";
 import { queryList } from "./service";
+import { formatDate } from "@/utils/index";
 
 const table = reactive<ITableData>({
 	loading: false,
@@ -144,7 +145,7 @@ watch(
 					type="index"
 					label="序号"
 					:index="
-						(index) => {
+						(index:any) => {
 							return (table.pagination.current - 1) * table.pagination.pageSize + index + 1;
 						}
 					"
@@ -172,7 +173,7 @@ watch(
 
 				<el-table-column label="交易时间" prop="time">
 					<template #default="{ row }">
-						{{ row.time }}
+						{{ formatDate(new Date(row.time)) }}
 					</template>
 				</el-table-column>
 
@@ -182,17 +183,17 @@ watch(
 					</template>
 				</el-table-column>
 
-				<el-table-column label="是否中奖" prop="winners">
+				<!-- <el-table-column label="是否中奖" prop="winners">
 					<template #default="{ row }">
 						{{ row.winners }}
 					</template>
-				</el-table-column>
+				</el-table-column> -->
 
-				<el-table-column label="是否在开起抢单之后参与" prop="winnerState">
+				<!-- <el-table-column label="是否在开起抢单之后参与" prop="winnerState">
 					<template #default="{ row }">
 						{{ row.winnerState }}
 					</template>
-				</el-table-column>
+				</el-table-column> -->
 
 				<!-- <el-table-column label="操作" prop="action" width="160">
 					<template #default>

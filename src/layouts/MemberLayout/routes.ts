@@ -12,7 +12,7 @@ const MemberLayoutRoutes: RouteRecordRaw[] = [
 	},
 	{
 		meta: {
-			title: "充值记录",
+			title: "转账记录",
 			// icon: "menu-home",
 		},
 		path: "/rechargeRecords",

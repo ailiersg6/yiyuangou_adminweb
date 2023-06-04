@@ -112,7 +112,7 @@ function submData() {
 		headers: {
 			"Content-Type": "application/json",
 		},
-		body: JSON.stringify({ ...ruleForm }),
+		body: JSON.stringify({ ...ruleForm, productLimit: ruleForm.productLimit * 1000000000 }),
 	})
 		.then((response) => {
 			if (!response.ok) {
@@ -301,7 +301,7 @@ const onWithdr = () => {
 			<el-form-item label="产品价值" prop="productValue">
 				<el-input v-model.number="ruleForm.productValue" placeholder="产品价值" />
 			</el-form-item>
-			<el-form-item label="最低有效金额( ton货币有9位小数 1个币 = 1000000000 )" prop="productLimit">
+			<el-form-item label="最低有效金额" prop="productLimit">
 				<el-input v-model.number="ruleForm.productLimit" placeholder="最低有效金额" />
 			</el-form-item>
 			<el-form-item label="中奖人数" prop="productP">

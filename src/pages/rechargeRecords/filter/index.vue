@@ -7,7 +7,7 @@ import IconSvg from "@/components/IconSvg/index.vue";
 import TypeSelect from "./components/TypeSelect/index.vue";
 import { ITableData, ITableListItem } from "./data";
 import { queryList } from "./service";
-
+import { formatDate } from "@/utils/index";
 const table = reactive<ITableData>({
 	loading: false,
 	list: [],
@@ -144,7 +144,7 @@ watch(
 					type="index"
 					label="序号"
 					:index="
-						(index) => {
+						(index:any) => {
 							return (table.pagination.current - 1) * table.pagination.pageSize + index + 1;
 						}
 					"
@@ -172,7 +172,7 @@ watch(
 
 				<el-table-column label="交易时间" prop="time">
 					<template #default="{ row }">
-						{{ row.time }}
+						{{ formatDate(new Date(row.time)) }}
 					</template>
 				</el-table-column>
 
@@ -199,7 +199,7 @@ watch(
 				:page-size="table.pagination.pageSize"
 				:total="table.pagination.total"
 				@current-change="
-					(p) => {
+					(p:any) => {
 						getList(p || 1);
 					}
 				"
