@@ -36,8 +36,8 @@ const onSubmit = async () => {
 				},
 				body: JSON.stringify({
 					// 根据接口要求设置请求体
-					username: "your_username",
-					password: "your_password",
+					// username: "your_username",
+					// password: "your_password",
 				}),
 			})
 				.then((response) => response.json())
@@ -93,12 +93,8 @@ const onSubmit = async () => {
 			</div>
 			<div class="item">
 				<el-form-item prop="username">
-					<el-input
-						placeholder="用户名：admin or test or user"
-						v-model="formData.username"
-						clearable
-						@keydown.enter="onSubmit"
-					>
+					<el-input placeholder="用户名：admin or test or user" v-model="formData.username" clearable
+						@keydown.enter="onSubmit">
 						<template #prefix>
 							<IconSvg name="user" />
 						</template>
@@ -107,13 +103,8 @@ const onSubmit = async () => {
 			</div>
 			<div class="item">
 				<el-form-item prop="password">
-					<el-input
-						placeholder="密码：123456"
-						type="password"
-						v-model="formData.password"
-						clearable
-						@keydown.enter="onSubmit"
-					>
+					<el-input placeholder="密码：123456" type="password" v-model="formData.password" clearable
+						@keydown.enter="onSubmit">
 						<template #prefix>
 							<IconSvg name="pwd" />
 						</template>
@@ -134,21 +125,24 @@ const onSubmit = async () => {
 .user-login {
 	width: 380px;
 	padding-bottom: 40px;
+
 	.title {
 		padding: 0 20px 20px;
 		font-size: 30px;
 		line-height: 50px;
 	}
+
 	.item {
 		padding: 5px 20px;
+
 		.width100 {
 			box-sizing: border-box;
 			width: 100%;
 		}
 	}
+
 	.item2 {
 		padding: 0 20px;
 		font-size: 12px;
 	}
-}
-</style>
+}</style>

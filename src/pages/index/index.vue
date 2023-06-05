@@ -5,9 +5,10 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { ElLoading, ElMessage, ElMessageBox, FormInstance, FormRules } from "element-plus";
 import { IFormData } from "./data";
+import { get } from "lodash";
 interface IFormData {
 	product: string; // 产品名称
 	productValue: number; // 产品价值
@@ -112,7 +113,7 @@ function submData() {
 		headers: {
 			"Content-Type": "application/json",
 		},
-		body: JSON.stringify({ ...ruleForm, productLimit: ruleForm.productLimit * 1000000000 }),
+		body: JSON.stringify({ ...ruleForm }),
 	})
 		.then((response) => {
 			if (!response.ok) {
@@ -282,6 +283,14 @@ const onWithdr = () => {
 		})
 		.catch(() => {});
 };
+let productLimit_ = computed({
+	get() {
+		return ruleForm.productLimit / 1000000000;
+	},
+	set(value) {
+		ruleForm.productLimit = value * 1000000000;
+	},
+});
 </script>
 
 <template>
@@ -301,8 +310,8 @@ const onWithdr = () => {
 			<el-form-item label="产品价值" prop="productValue">
 				<el-input v-model.number="ruleForm.productValue" placeholder="产品价值" />
 			</el-form-item>
-			<el-form-item label="最低有效金额" prop="productLimit">
-				<el-input v-model.number="ruleForm.productLimit" placeholder="最低有效金额" />
+			<el-form-item label="最低有效金额 ton" prop="productLimit">
+				<el-input v-model.number="productLimit_" placeholder="最低有效金额" />
 			</el-form-item>
 			<el-form-item label="中奖人数" prop="productP">
 				<el-input v-model.number="ruleForm.productP" placeholder="中奖人数" />

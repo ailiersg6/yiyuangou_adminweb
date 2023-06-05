@@ -14,7 +14,7 @@ const table = reactive<ITableData>({
 	pagination: {
 		total: 0,
 		current: 1,
-		pageSize: 10,
+		pageSize: 20,
 	},
 });
 
@@ -50,7 +50,7 @@ const getList = async (current: number): Promise<void> => {
 			table.pagination = {
 				total: data.page_.totalPage || 0, // 记录总数
 				current: data.page_.carrPage,
-				pageSize: 10,
+				pageSize: 20,
 			};
 		})
 		.catch((error) => {
@@ -140,16 +140,10 @@ watch(
 
 		<div style="width: 99.9%">
 			<el-table row-key="id" :data="table.list" v-loading="table.loading">
-				<el-table-column
-					type="index"
-					label="序号"
-					:index="
-						(index:any) => {
-							return (table.pagination.current - 1) * table.pagination.pageSize + index + 1;
-						}
-					"
-					width="80"
-				>
+				<el-table-column type="index" label="序号" :index="(index: any) => {
+					return (table.pagination.current - 1) * table.pagination.pageSize + index + 1;
+				}
+					" width="80">
 				</el-table-column>
 
 				<el-table-column label="adrress" prop="adrress">
@@ -178,7 +172,7 @@ watch(
 
 				<el-table-column label="交易金额  ton" prop="val">
 					<template #default="{ row }">
-						{{ row.val }}
+						{{ (row.val / 1000000000).toFixed(4) }}
 					</template>
 				</el-table-column>
 
@@ -192,18 +186,12 @@ watch(
 		</div>
 
 		<div class="padding-t10">
-			<el-pagination
-				background
-				layout="prev, pager, next"
-				v-model:current-page="table.pagination.current"
-				:page-size="table.pagination.pageSize"
-				:total="table.pagination.total"
-				@current-change="
-					(p:any) => {
-						getList(p || 1);
-					}
-				"
-			>
+			<el-pagination background layout="prev, pager, next" v-model:current-page="table.pagination.current"
+				:page-size="table.pagination.pageSize" :total="table.pagination.total * table.pagination.pageSize"
+				@current-change="(p: any) => {
+					getList(p || 1);
+				}
+					">
 			</el-pagination>
 		</div>
 	</el-card>

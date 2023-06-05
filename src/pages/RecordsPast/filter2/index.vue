@@ -32,7 +32,7 @@ const getList = async (current: number): Promise<void> => {
 			"Content-Type": "application/json",
 		},
 		body: JSON.stringify({
-			// ...searchModelRef,
+			...searchModelRef,
 			// page: table.pagination.current, // 当前页
 			// pageSize: table.pagination.pageSize, // 每页数量
 		}),
@@ -85,12 +85,12 @@ watch(
 	<el-card shadow="never" style="margin-bottom: 15px" :body-style="{ 'padding-bottom': '0' }">
 		<el-form :model="searchModelRef" ref="searchFormRef" label-width="80px">
 			<el-row type="flex" class="flex-wrap-wrap">
-				<!-- <el-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
+				<el-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
 					<el-form-item label="期数：">
 						<el-input placeholder="1" v-model.number="searchModelRef.issue" />
 					</el-form-item>
 				</el-col>
-				<el-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
+				<!-- <el-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
 					<el-form-item label="hash：">
 						<el-input placeholder="" v-model="searchModelRef.hash" />
 					</el-form-item>
@@ -141,16 +141,10 @@ watch(
 
 		<div style="width: 99.9%">
 			<el-table row-key="id" :data="table.list" v-loading="table.loading">
-				<el-table-column
-					type="index"
-					label="序号"
-					:index="
-						(index:any) => {
-							return (table.pagination.current - 1) * table.pagination.pageSize + index + 1;
-						}
-					"
-					width="80"
-				>
+				<el-table-column type="index" label="序号" :index="(index: any) => {
+					return (table.pagination.current - 1) * table.pagination.pageSize + index + 1;
+				}
+					" width="80">
 				</el-table-column>
 
 				<el-table-column label="adrress" prop="adrress">
@@ -179,7 +173,7 @@ watch(
 
 				<el-table-column label="交易金额  ton" prop="val">
 					<template #default="{ row }">
-						{{ row.val }}
+						{{ (row.val / 1000000000).toFixed(4) }}
 					</template>
 				</el-table-column>
 

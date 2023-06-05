@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { useUserStore } from "@/store/user";
 import PageLoading from "@/components/PageLoading/index.vue";
+import { getToken } from "@/utils/localToken";
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -11,8 +12,10 @@ const userStore = useUserStore();
 // 读取当前用户信息
 const getUser = async () => {
 	const { code, msg } = await userStore.getInfo();
+	let token = getToken()
+
 	console.log(code, msg);
-	if (code === 1) {
+	if (!token) {
 		// 未登录或登入信息失效
 		router.replace({
 			path: "/user/login",
