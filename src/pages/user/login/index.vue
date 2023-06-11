@@ -29,7 +29,7 @@ const onSubmit = async () => {
 		const valid: boolean | undefined = await formRef.value?.validate();
 		if (valid === true) {
 			// const response: IResponseData<any> = await accountLogin(formData);
-			fetch("http://103.56.115.196:8080/login", {
+			fetch("http://184.168.123.91:8080/login", {
 				method: "POST", // 根据接口要求选择请求方法
 				headers: {
 					"Content-Type": "application/json", // 根据接口要求设置请求头

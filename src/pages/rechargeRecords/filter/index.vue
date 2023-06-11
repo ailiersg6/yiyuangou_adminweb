@@ -23,7 +23,7 @@ const table = reactive<ITableData>({
 const getList = async (current: number): Promise<void> => {
 	table.loading = true;
 
-	const apiUrl = "http://103.56.115.196:8080/add2";
+	const apiUrl = "http://184.168.123.91:8080/add2";
 
 	fetch(apiUrl, {
 		method: "POST",

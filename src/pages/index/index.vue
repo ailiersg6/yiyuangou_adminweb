@@ -24,6 +24,7 @@ interface IFormData {
 	// remark: string;
 }
 const ruleFormRef = ref<FormInstance>();
+let server_issue = ref(0)
 const ruleForm = reactive<IFormData>({
 	product: "",
 	productValue: 0,
@@ -37,8 +38,21 @@ const ruleForm = reactive<IFormData>({
 onMounted(() => {
 	getdata();
 });
-function getdata() {
-	// http://103.56.115.196:8080/product1
+
+function showPop() {
+	return new Promise((resolve) => {
+		ElMessageBox.alert(`当前设置期数：${ruleForm.issue} 不应小于历史期数 ${server_issue.value}`, {
+			confirmButtonText: 'OK',
+			callback: () => {
+				resolve(true)
+			},
+		})
+
+	})
+}
+async function getdata() {
+	// http://184.168.123.91:8080/product1
+
 
 	const loading = ElLoading.service({
 		lock: true,
@@ -46,7 +60,7 @@ function getdata() {
 		background: "rgba(0, 0, 0, 0.7)",
 	});
 
-	const apiUrl = "http://103.56.115.196:8080/product1";
+	const apiUrl = "http://184.168.123.91:8080/product1";
 
 	fetch(apiUrl, {
 		method: "POST",
@@ -65,6 +79,7 @@ function getdata() {
 			// 处理响应数据
 			delete data.rows[0].id;
 			Object.assign(ruleForm, { ...data.rows[0] });
+			server_issue.value = data.rows[0].issue
 
 			loading.close();
 		})
@@ -105,8 +120,15 @@ const rules = reactive<FormRules>({
 	remark: [],
 });
 // 修改产品
-function submData() {
-	const apiUrl = "http://103.56.115.196:8080/product";
+async function submData() {
+
+
+	// if (ruleForm.issue < server_issue.value) {
+	// 	await showPop()
+	// 	return
+	// }
+
+	const apiUrl = "http://184.168.123.91:8080/product";
 
 	fetch(apiUrl, {
 		method: "PATCH",
@@ -138,7 +160,7 @@ function submData() {
 
 function editOpen() {
 	return new Promise((resolve) => {
-		const apiUrl = "http://103.56.115.196:8080/product";
+		const apiUrl = "http://184.168.123.91:8080/product";
 
 		fetch(apiUrl, {
 			method: "PATCH",
@@ -189,7 +211,7 @@ const onStart = async () => {
 
 	await editOpen(); //  设置open = 1
 
-	const apiUrl = "http://103.56.115.196:8080/rewarded";
+	const apiUrl = "http://184.168.123.91:8080/rewarded";
 
 	fetch(apiUrl, {
 		method: "Post",
@@ -224,7 +246,7 @@ const onStart = async () => {
 };
 // 停止活动
 const onStop = async () => {
-	const apiUrl = "http://103.56.115.196:8080/product3";
+	const apiUrl = "http://184.168.123.91:8080/product3";
 	// 停止活动
 	fetch(apiUrl, {
 		method: "POST",
@@ -257,7 +279,7 @@ const onWithdr = () => {
 		type: "warning",
 	})
 		.then(() => {
-			const apiUrl = "http://103.56.115.196:8080/withdraw1";
+			const apiUrl = "http://184.168.123.91:8080/withdraw1";
 			// 停止活动
 			fetch(apiUrl, {
 				method: "POST",
@@ -281,7 +303,7 @@ const onWithdr = () => {
 					console.error(error);
 				});
 		})
-		.catch(() => {});
+		.catch(() => { });
 };
 let productLimit_ = computed({
 	get() {
@@ -295,15 +317,8 @@ let productLimit_ = computed({
 
 <template>
 	<el-card shadow="never" :inline="true">
-		<el-form
-			ref="ruleFormRef"
-			:model="ruleForm"
-			:rules="rules"
-			label-position="top"
-			label-width="120px"
-			require-asterisk-position="right"
-			style="max-width: 900px"
-		>
+		<el-form ref="ruleFormRef" :model="ruleForm" :rules="rules" label-position="top" label-width="120px"
+			require-asterisk-position="right" style="max-width: 900px">
 			<el-form-item label="产品名称" prop="product">
 				<el-input v-model="ruleForm.product" placeholder="请输入产品名称" />
 			</el-form-item>
